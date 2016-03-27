@@ -5,7 +5,7 @@ date: 2016-03-27
 author: luchigster
 comments: false
 categories: [Blog]
-tags: [Blog,Jekyll]
+tags: [Jekyll]
 ---
 
 ### 第一步
