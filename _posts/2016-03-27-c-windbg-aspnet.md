@@ -19,7 +19,6 @@ tags: [AspNet,WinDbg]
 
 1. `WinDbg`
 2. `SOS`、`SOSEX`和`Psscor`
-3. 内存问题排查
-4. CPU问题排查
-5. 总结
-6. 实例...
+3. [命令集合](/d-windbg-aspnet-cmd/)
+4. 内存问题排查实例
+5. CPU问题排查实例
