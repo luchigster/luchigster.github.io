@@ -5,7 +5,8 @@ date: 2016-03-27
 author: luchigster
 comments: false
 categories: [Blog]
-tags: [AspNet,WinDbg]
+tags: [AspNet,WinDbg,SOS,SOSEX,kb,ln,threadpool,runaway,threads,clrstack,dso,syncblk,gcroot,mdt,dumpclass,dumpmt,dumpheap,dumpobj,do,da,dumparray,objsize]
+excerpt: 整理windbg+sos+sosex的主要命令集合
 ---
 
 ### 一、生成内存镜像

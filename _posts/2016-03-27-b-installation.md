@@ -5,7 +5,8 @@ date: 2016-03-27
 author: luchigster
 comments: false
 categories: [Blog]
-tags: [Jekyll]
+tags: [Jekyll,GitHub,GitPages,gh-pages,pages]
+excerpt: 安装jekyll搭建GitPage建站环境
 ---
 
 ### 第一步
@@ -56,8 +57,7 @@ jekyll serve                #启动本地预览
    ```
    git clone https://github.com/luchigster/luchigster.github.io.git #克隆源代码
    gem install jekyll          #安装jekyll环境 
-   gem install jekyll-paginate #安装分页插件
-   gem install rdiscount       #安装Markdown解析插件       
+   gem install jekyll-paginate #安装分页插件       
    jekyll serve                #启动本地预览
    ```
 
