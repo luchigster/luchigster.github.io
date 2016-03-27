@@ -1,0 +1,25 @@
+# Site settings
+title: luchigster
+name: luchigster
+url: "http://luchigster.github.io/"
+email: luchigster@gmail.com
+description: luchigster的博客
+baseurl: "" # the subpath of your site, e.g. /blog/
+#twitter_username: waylau521  # Twitter ID
+#github_username:  waylau # Github ID
+#weibo_username: waylau521  # Weibo ID
+#facebook_username: waylau521  # Facebook ID
+#duoshuo_username: luchigster # Duoshuo ID
+#baidushare_id: 89860593 #  百度分享 ID
+#baidutongji_id: 28cf5fa48a599e39c5cc760931de942f # 百度统计 ID
+#google-analytics_id: UA-50593531-1  # Google Analytics ID
+rss_url: "/feed.xml"  # RSS 订阅 URL
+logo_image: "/images/cnm.jpg"  # LOGO 图片地址
+# Build settings
+gems: [jekyll-paginate]
+markdown: rdiscount
+highlighter: pygments
+permalink: /:title/
+paginate: 8
+paginate_path: page/:num
+ 
