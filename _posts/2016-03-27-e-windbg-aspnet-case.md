@@ -1,7 +1,7 @@
 ---
 layout: post
 title: WinDbg排查.Net问题系列-内存分析案例1
-date: 2016-03-27
+date: 2016-03-30
 author: luchigster
 comments: false
 categories: [Blog]
@@ -91,35 +91,7 @@ Fields:
 000007fef3a2c568  4000037        8 ...meValueCollection  0 instance 000000024f77c0e0 _values
 000007fef4727e30  40005a4       18         System.Int64  1 instance 1 _id
 000007fef4727e30  40005a5       20         System.Int64  1 instance 634792633658564898 _organizationId
-000007fef470d688  40005a6       11       System.Boolean  1 instance                1 _isEnabled
-000007fef4727e30  40005a7       28         System.Int64  1 instance 634771907395829297 _adderId
-000007fef4729748  40005a8       70      System.DateTime  1 instance 000000024f77c0d0 _addTime
-000007fef470d688  40005a9       12       System.Boolean  1 instance                1 _release
-000007fef470d688  40005aa       13       System.Boolean  1 instance                1 _isSendMessage
-000007fef470d688  40005ab       5c       System.Boolean  1 instance                0 _isSendUnNormalTimeMsg
-000007fef470c858  40005ac       14         System.Int32  1 instance              180 _repeatCardTimeSpan
-000007fef4727e30  40005ad       30         System.Int64  1 instance 634801920635396445 _schoolTimeMainId
-000007fef470d688  40005ae       5d       System.Boolean  1 instance                0 _isSendStatMessage
-000007fef470d688  40005af       5e       System.Boolean  1 instance                0 _isSendNoSwingMessage
-000007fef470d688  40005b0       5f       System.Boolean  1 instance                0 _isSendConsumeMessage
-000007fef4727e30  40005b1       38         System.Int64  1 instance 634792631967710115 _cityId
-000007fef4727e30  40005b2       40         System.Int64  1 instance 634792635250702157 _areaId
-000007fef470d688  40005b3       60       System.Boolean  1 instance                0 _isSendStatDorm
-000007fef470d688  40005b4       61       System.Boolean  1 instance                0 _isSendUnNormalTimeMsgToClassHeader
-000007fef470d688  40005b5       62       System.Boolean  1 instance                1 _smsTimeEnabled
-000007fef470d688  40005b6       63       System.Boolean  1 instance                0 _smsMachineEnabled
-000007fef470d688  40005b7       64       System.Boolean  1 instance                0 _isVideo
-000007fef470d688  40005b8       65       System.Boolean  1 instance                0 _isImage
-000007fef470d688  40005b9       66       System.Boolean  1 instance                0 _isSendCorrespondMsgInSchoolTime
-000007fef470d688  40005ba       67       System.Boolean  1 instance                0 _isSendWeekReport
-000007ff0753c3d8  40005bb       48         System.Int32  1 instance                0 _week
-000007fef470c858  40005bc       4c         System.Int32  1 instance                0 _hour
-000007fef470c858  40005bd       50         System.Int32  1 instance                0 _minute
-000007fef470d688  40005be       68       System.Boolean  1 instance                0 _isEnableLateEarlyout
-000007fef470c858  40005bf       54         System.Int32  1 instance                0 _lateInSchool
-000007fef470c858  40005c0       58         System.Int32  1 instance                0 _earlyOutSchool
-000007fef470d688  40005c1       69       System.Boolean  1 instance                1 _isStatLiveInSchool
-000007fef470d688  40005c2       6a       System.Boolean  1 instance                1 _isPlayVoice
+省略...
 ```
 
 看起来没什么问题，感觉不像一个大对象，先`!objsize`看看内容大小再说
@@ -571,22 +543,7 @@ Fields:
 00007ff8a041dac8  4000037        8 ...meValueCollection  0 instance 0000025697fa4e90 _values
 00007ff8b3c08548  40012ce       18        System.String  0 instance 0000025697fa5140 _password
 00007ff8b3c06390  40012cf       20         System.Int64  1 instance 634872879982677108 _userId
-00007ff856267d78  40012d0       38         System.Int32  1 instance               10 _userType
-00007ff8b3c06390  40012d1       28         System.Int64  1 instance 1 _customId
-00007ff8b3c2a2f0  40012d2       11       System.Boolean  1 instance                1 _isEnabled
-00007ff8b3c06390  40012d3       30         System.Int64  1 instance 634780509405312487 _adderId
-00007ff8b3c27bb8  40012d4       40      System.DateTime  1 instance 0000025697fa4e18 _addTime
-00007ff8b3c27bb8  40012d5       48      System.DateTime  1 instance 0000025697fa4e20 _updateTime
-00007ff8b3c2a2f0  40012d6       12       System.Boolean  1 instance                1 _release
-00007ff8562e9c20  4001363       50         System.Int32  1 instance                0 _sex
-00007ff8b3c27bb8  4001364       68      System.DateTime  1 instance 0000025697fa4e40 _birthday
-00007ff8562eb000  4001365       54         System.Int32  1 instance                0 _property
-00007ff85642ac80  4001366       58         System.Int32  1 instance                9 _payType
-00007ff85642cb40  4001367       5c         System.Int32  1 instance               10 _state
-00007ff8b3c0af70  4001368       60         System.Int32  1 instance                0 _useType
-00007ff8b3c05b60  4001369       70 ...olean, mscorlib]]  1 instance 0000025697fa4e48 _powerUserDisplayMobile
-00007ff856fad3b0  4001361       78 ...ngLong.CMP.BASE]]  0 instance 0000025697fa4e68 _positions
-00007ff8b3c08548  4001362       80        System.String  0 instance 0000000000000000 <SyncUserId>k__BackingField
+省略...
 0:065> !objsize 0000025697fa4dd8
 sizeof(0000025697fa4dd8) = 4632 (0x1218) bytes (CMP.DataModel.User)
 ```
@@ -616,40 +573,7 @@ Fields:
 00007ff8b3c2a2f0  4001230        8       System.Boolean  1 instance                0 <HasUsed>k__BackingField
 00007ff8b3c08548  40012d0       10        System.String  0 instance 0000021daf71e640 _password
 00007ff8b3c06390  40012d1       48         System.Int64  1 instance 634872879982677108 _userId
-00007ff856110020  40012d2       60         System.Int32  1 instance               10 _userType
-00007ff8b3c06390  40012d3       50         System.Int64  1 instance 1 _customId
-00007ff8b3c2a2f0  40012d4        9       System.Boolean  1 instance                1 _isEnabled
-00007ff8b3c06390  40012d5       58         System.Int64  1 instance 634780509405312487 _adderId
-00007ff8b3c27bb8  40012d6       68      System.DateTime  1 instance 0000021daf717d30 _addTime
-00007ff8b3c27bb8  40012d7       70      System.DateTime  1 instance 0000021daf717d38 _updateTime
-00007ff8b3c2a2f0  40012d8        a       System.Boolean  1 instance                1 _release
-00007ff8b3c08548  40012d9       18        System.String  0 instance 0000021daf71e5b8 <Name>k__BackingField
-00007ff8b3c08548  40012da       20        System.String  0 instance 0000021daf71e5d8 <Account>k__BackingField
-00007ff8b3c08548  40012db       28        System.String  0 instance 0000021daf71e608 <CustomAccount>k__BackingField
-00007ff8b3c08548  40012dc       30        System.String  0 instance 000002202f211420 <ImportPassword>k__BackingField
-00007ff8b3c08548  40012dd       38        System.String  0 instance 0000021daf71e690 <AccountOA>k__BackingField
-00007ff8b3c08548  40012de       40        System.String  0 instance 0000021daf71e6b8 <AreaCode>k__BackingField
-00007ff856193ef0  400136e       d8         System.Int32  1 instance                0 _sex
-00007ff8b3c27bb8  400136f       f0      System.DateTime  1 instance 0000021daf717db8 _birthday
-00007ff8561952d0  4001370       dc         System.Int32  1 instance                0 _property
-00007ff8562d6860  4001371       e0         System.Int32  1 instance                9 _payType
-00007ff8562d8750  4001372       e4         System.Int32  1 instance               10 _state
-00007ff8b3c0af70  4001373       e8         System.Int32  1 instance                0 _useType
-00007ff8b3c05b60  4001374       f8 ...olean, mscorlib]]  1 instance 0000021daf717dc0 _powerUserDisplayMobile
-00007ff8b3c08548  4001375       78        System.String  0 instance 000002202f211420 _mobile
-00007ff8b3c08548  4001376       80        System.String  0 instance 000002202f211420 _mobile2
-00007ff8b3c08548  4001377       88        System.String  0 instance 000002202f211420 <CompanyPhone>k__BackingField
-00007ff8b3c08548  4001378       90        System.String  0 instance 000002202f211420 <Fax>k__BackingField
-00007ff8b3c08548  4001379       98        System.String  0 instance 000002202f211420 <Email>k__BackingField
-00007ff8b3c08548  400137a       a0        System.String  0 instance 000002202f211420 <Code>k__BackingField
-00007ff8b3c08548  400137b       a8        System.String  0 instance 000002202f211420 <Sign>k__BackingField
-00007ff8b3c08548  400137c       b0        System.String  0 instance 000002202f211420 <NickName>k__BackingField
-00007ff8b3c08548  400137d       b8        System.String  0 instance 000002202f211420 <IdCardNum>k__BackingField
-00007ff8b3c08548  400137e       c0        System.String  0 instance 000002202f211420 <UserCode>k__BackingField
-00007ff8b3c08548  400137f       c8        System.String  0 instance 000002202f211420 <UserNumber>k__BackingField
-00007ff8b3c08548  4001380       d0        System.String  0 instance 000002202f211420 <Remark>k__BackingField
-00007ff856ed78a0  400136c      100 ...ngLong.CMP.BASE]]  0 instance 0000021daf717de0 _positions
-00007ff8b3c08548  400136d      108        System.String  0 instance 000002202f211420 <SyncUserId>k__BackingField
+省略...
 0:069> !objsize 0000021daf717cc8
 sizeof(0000021daf717cc8) = 744 (0x2e8) bytes (CMP.DataModel.User)
 ```
