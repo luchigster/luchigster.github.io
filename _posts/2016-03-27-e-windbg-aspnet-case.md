@@ -1,6 +1,6 @@
 ---
 layout: post
-title: WinDbg排查.Net问题系列-内存分析案例1
+title: WinDbg排查.Net问题系列案例1-内存分析
 date: 2016-03-30
 author: luchigster
 comments: false
