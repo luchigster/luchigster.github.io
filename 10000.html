@@ -9,6 +9,7 @@
 </head>
 
 <body style="background-color:white;">
+    <h4>生成不重复的编码</h4>
     <table>
         <tr>
             <td style="width:100px">左侧编码从：</td>
@@ -59,17 +60,7 @@
     var row = it[rowIdx];
 }}
   <tr>
-    <td>{{=row[0]}}</td>
-    <td>{{=row[1]}}</td>
-    <td>{{=row[2]}}</td>
-    <td>{{=row[3]}}</td>
-    <td>{{=row[4]}}</td>
-    <td>{{=row[5]}}</td>
-    <td>{{=row[6]}}</td>
-    <td>{{=row[7]}}</td>
-    <td>{{=row[8]}}</td>
-    <td>{{=row[9]}}</td>
-    <td>{{=row[10]}}</td>
+        <td>{{=row[0]}} {{=row[1]}} {{=row[2]}} {{=row[3]}} {{=row[4]}} {{=row[5]}} {{=row[6]}} {{=row[7]}} {{=row[8]}} {{=row[9]}} {{=row[10]}}</td>
   </tr>
 {{
   }
@@ -131,7 +122,7 @@
         var numbers = [];
         for (var leftIdx = 0; leftIdx < numbersLeft.length; leftIdx++) {
             for (var rightIdx = 0; rightIdx < numbersRight.length; rightIdx++) {
-                numbers.push(Pad(numbersLeft[leftIdx]) + Pad(numbersRight[rightIdx]));
+                numbers.push((Pad(numbersLeft[leftIdx]) + Pad(numbersRight[rightIdx])).split('').join(' '));
             }
         }
 
@@ -152,13 +143,17 @@
         for (var rowIdx = 0; rowIdx < rowCount; rowIdx++) {
             var row = [];
             for (var colIdx = 0; colIdx < 10; colIdx++) {
-                row[colIdx] = numbersFinal.pop() || "";
+                row[colIdx] = numbersFinal.pop() || "0 0 0 0";
             }
             row[10] = "Row " + (rowIdx + 1);
             json.push(row);
 
             if((rowIdx+1) % 25 == 0){
-                json.push(['----','----','----','----','----','----','----','----','----','----','----']);
+                var aa = [];
+                for(var x = 0; x <= 10; x ++){
+                    aa.push('&nbsp;')
+                }
+                json.push(aa);
             }
         }
 
