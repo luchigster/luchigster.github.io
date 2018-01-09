@@ -128,9 +128,9 @@
 
         //所有组合编码
         var numbers = [];
-        for (left in numbersLeft) {
-            for (right in numbersRight) {
-                numbers.push(Pad(left) + Pad(right));
+        for (var leftIdx = 0; leftIdx < numbersLeft.length; leftIdx++) {
+            for (var rightIdx = 0; rightIdx < numbersRight.length; rightIdx++) {
+                numbers.push(Pad(numbersLeft[leftIdx]) + Pad(numbersRight[rightIdx]));
             }
         }
 
