@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>10000数字</title>
+    <script src="https://cdn.bootcss.com/dot/1.1.2/doT.min.js"></script>
+</head>
+
+<body style="background-color:white;">
+    <table>
+        <tr>
+            <td style="width:100px">左侧编码从：</td>
+            <td style="width:20px">
+                <input id="fromLeft" type="text" style="width:100%" />
+            </td>
+            <td style="width:40px; text-align:right;">到：</td>
+            <td style="width:20px">
+                <input id="toLeft" type="text" style="width:100%" />
+            </td>
+            <td style="width:150px; text-align:right;">额外(逗号分开)：</td>
+            <td style="width:100px">
+                <input id="extraLeft" type="text" style="width:100%" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:100px">右侧编码从：</td>
+            <td style="width:20px">
+                <input id="fromRight" type="text" style="width:100%" />
+            </td>
+            <td style="width:40px; text-align:right;">到：</td>
+            <td style="width:20px">
+                <input id="toRight" type="text" style="width:100%" />
+            </td>
+            <td style="width:150px; text-align:right;">额外(逗号分开)：</td>
+            <td style="width:100px">
+                <input id="extraRight" type="text" style="width:100%" />
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td colspan="5">
+                <input type="button" onclick="Randomize()" value="生成0000-9999的随机数" style="width:100%" />
+            </td>
+        </tr>
+    </table>
+
+    <div id="container"></div>
+
+    <textarea id="tpl" style="display:none">
+     
+<div class="wrap-table">
+<table>
+  <tbody>
+<!-- Content Row -->
+{{
+  for (var rowIdx = 0; rowIdx < it.length; rowIdx ++) {
+    var row = it[rowIdx];
+}}
+  <tr>
+    <td>{{=row[0]}}</td>
+    <td>{{=row[1]}}</td>
+    <td>{{=row[2]}}</td>
+    <td>{{=row[3]}}</td>
+    <td>{{=row[4]}}</td>
+    <td>{{=row[5]}}</td>
+    <td>{{=row[6]}}</td>
+    <td>{{=row[7]}}</td>
+    <td>{{=row[8]}}</td>
+    <td>{{=row[9]}}</td>
+    <td>{{=row[10]}}</td>
+  </tr>
+{{
+  }
+}}               
+<!-- End of Content Rows -->
+    </tbody>
+  </table>
+</div>
+        
+<!-- END ANNOUNCEMENT / MY ANNOUNCEMENT -->
+</textarea>
+</body>
+<script>
+
+    var Pad = function(num) {  
+        return num<10 ? '0'+num :num+"";  
+    }
+
+    var Shuffle = function (input) {
+        for (var i = input.length - 1; i >= 0; i--) {
+            var randomIndex = Math.floor(Math.random() * (i + 1));
+            var itemAtIndex = input[randomIndex];
+            input[randomIndex] = input[i];
+            input[i] = itemAtIndex;
+        }
+    }
+
+    var Randomize = function () {
+        var tmpText = doT.template(document.getElementById("tpl").innerText);
+
+        var numbersLeft = [];
+        var numbersRight = [];
+
+        //左侧编码
+        var fromLeft = parseInt(document.getElementById("fromLeft").value);
+        var toLeft = parseInt(document.getElementById("toLeft").value);
+        for (var i = fromLeft; i <= toLeft && i < 100; i++) {
+            numbersLeft.push(i);
+        }
+        var extraLeft = document.getElementById("extraLeft").value.split(',');
+        for (var i = 0; i < extraLeft.length; i++) {
+            var ii = parseInt(extraLeft[i]);
+            if (ii && ii >= 0 && ii < 100) numbersLeft.push(ii);
+        }
+
+        //右侧编码
+        var fromRight = parseInt(document.getElementById("fromRight").value);
+        var toRight = parseInt(document.getElementById("toRight").value);
+        for (var i = fromRight; i <= toRight && i < 100; i++) {
+            numbersRight.push(i);
+        }
+        var extraRight = document.getElementById("extraRight").value.split(',');
+        for (var i = 0; i < extraRight.length; i++) {
+            var ii = parseInt(extraRight[i]);
+            if (ii && ii >= 0 && ii < 100) numbersRight.push(ii);
+        }
+
+        //所有组合编码
+        var numbers = [];
+        for (left in numbersLeft) {
+            for (right in numbersRight) {
+                numbers.push(Pad(left) + Pad(right));
+            }
+        }
+
+        //随机排序
+        var numbersIndices = [];
+        for (var idx = 0; idx < numbers.length; idx++) {
+            numbersIndices[idx] = idx;
+        }
+        Shuffle(numbersIndices);//索引随机排序
+
+        var numbersFinal = [];
+        for (var idx = 0; idx < numbers.length; idx++) {
+            numbersFinal[idx] = numbers[numbersIndices[idx]];
+        }
+
+        var json = [];
+        var rowCount = Math.ceil(numbersFinal.length / 10);
+        for (var rowIdx = 0; rowIdx < rowCount; rowIdx++) {
+            var row = [];
+            for (var colIdx = 0; colIdx < 10; colIdx++) {
+                row[colIdx] = numbersFinal.pop() || "";
+            }
+            row[10] = "Row " + (rowIdx + 1);
+            json.push(row);
+
+            if((rowIdx+1) % 25 == 0){
+                json.push(['----','----','----','----','----','----','----','----','----','----','----']);
+            }
+        }
+
+        var result = tmpText(json);
+
+        document.getElementById("container").innerHTML = result;
+    }
+</script>
+
+</html>
