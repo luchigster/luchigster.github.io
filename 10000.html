@@ -31,10 +31,9 @@
             <td style="width:200px">
                 <input id="extraLeft" type="text" style="width:100%" />
             </td>
-            <td style="width:100px; text-align:right;">
-                <input type="button" onclick="OctonaryLeft()" value="八进制4096" title="填充八进制的所有组合，最多4096个组合" />
-            </td>
-            <td style="width:100px">
+            <td style="text-align:left;">&nbsp;
+                <input type="button" onclick="DecimalLeft()" value="十进制10000" title="填充十进制的所有组合，最多10000个组合" />&nbsp;
+                <input type="button" onclick="OctonaryLeft()" value="八进制4096" title="填充八进制的所有组合，最多4096个组合" />&nbsp;
                 <input type="button" onclick="PockerLeft()" value="扑克牌2704" title="填充扑克牌的所有组合，最多2704个组合" />
             </td>
         </tr>
@@ -51,15 +50,14 @@
             <td style="width:200px">
                 <input id="extraRight" type="text" style="width:100%" />
             </td>
-            <td style="width:100px; text-align:right;">
-                <input type="button" onclick="OctonaryRight()" value="八进制4096" title="填充八进制的所有组合，最多4096个组合" />
-            </td>
-            <td style="width:100px">
+            <td style="text-align:left;">&nbsp;
+                <input type="button" onclick="DecimalRight()" value="十进制10000" title="填充十进制的所有组合，最多10000个组合" />&nbsp;
+                <input type="button" onclick="OctonaryRight()" value="八进制4096" title="填充八进制的所有组合，最多4096个组合" />&nbsp;
                 <input type="button" onclick="PockerRight()" value="扑克牌2704" title="填充扑克牌的所有组合，最多2704个组合" />
             </td>
         </tr>
         <tr>
-            <td colspan="6">
+            <td colspan="7">
                 <input type="button" onclick="Randomize()" value="排列组合" style="width:40%" title="从上面的条件的集合中排列组合" />&nbsp;
                 <input type="button" onclick="Randomize2()" value="随机生成10页" style="width:40%" title="从上面的条件的集合中随机选取" />
             </td>
@@ -225,6 +223,18 @@
         $("#fromRight").val("10");
         $("#toRight").val("49");
         $("#extraRight").val("51,52,53,54,61,62,63,64,71,72,73,74");
+    }
+
+    var DecimalLeft = function(){
+        $("#fromLeft").val("00");
+        $("#toLeft").val("99");
+        $("#extraLeft").val("");
+    }
+
+    var DecimalRight = function(){
+        $("#fromRight").val("00");
+        $("#toRight").val("99");
+        $("#extraRight").val("");
     }
 
     var Pad = function (num, full) {
