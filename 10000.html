@@ -14,9 +14,10 @@
 
 <body style="background-color:white;">
     <h4>数字训练</h4>
-    <p>八进制、扑克牌的随机训练，仅作为辅助熟悉连接。<br>
-    由于赛制、编码数量等都不相同无法作为真实训练材料，熟悉编码连接后务必使用真实的二进制、扑克牌进行直映训练。<br>
-    二进制、扑克牌所用到的连接共有5041个，在10000连中地位比较重要些，而扑克牌的2704更重要，需要特别优化。</p>
+    <p>八进制、扑克牌的随机训练，仅作为辅助熟悉连接。
+        <br> 由于赛制、编码数量等都不相同无法作为真实训练材料，熟悉编码连接后务必使用真实的二进制、扑克牌进行直映训练。
+        <br> 二进制、扑克牌所用到的连接共有5041个，在10000连中地位比较重要些，而扑克牌的2704更重要，需要特别优化。
+    </p>
     <table>
         <tr>
             <td style="width:100px">左侧编码从：</td>
@@ -57,6 +58,17 @@
             </td>
         </tr>
         <tr>
+            <td>数字模式：</td>
+            <td colspan="6">
+                <select id="modeNumber" onchange="ChangeNumberMode(this)">
+                    <option value="10" selected="selected">十进制模式</option>
+                    <option value="8">八进制模式</option>
+                    <option value="2">二进制模式</option>
+                    <option value="52">扑克牌模式</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
             <td colspan="7">
                 <input type="button" onclick="Randomize()" value="排列组合" style="width:40%" title="从上面的条件的集合中排列组合" />&nbsp;
                 <input type="button" onclick="Randomize2()" value="随机生成10页" style="width:40%" title="从上面的条件的集合中随机选取" />
@@ -72,21 +84,58 @@
     <table>
         <tbody>
             <tr>
-                <td>
-                    <p>&nbsp;</p>
-                    <input type="button" onclick="Start(this)" value="开始训练" style="width:100%" />
-                    <p>&nbsp;</p>
-                </td>
+                <td><p>第1页</p></td>
                 <td></td>
+                <td>
+                    <p><input type="button" onclick="Start(this)" value="开始" /></p>
+                </td>
             </tr>
         <!-- Content Row -->
         {{
-        for (var rowIdx = 0; rowIdx < it.length; rowIdx ++) {
-            var row = it[rowIdx];
+        for (var rowIdx = 0; rowIdx < it.list.length; rowIdx ++) {
+            var row = it.list[rowIdx];
         }}
-        <tr id="row{{=row[10]}}">
+        <tr id="row{{=row[row.length-1]}}">
                 <td>
-                    {{? row[0].length === 7 }}
+                    {{? it.mode == 8 && row[0].length === 7 }}
+                        {{
+                        for (var i = 0; i < 5; i ++) {
+                        }}
+                        <span onclick="ToggleColor(this)">{{=row[i]}}</span> 
+                        {{
+                        }
+                        }}
+                    {{?? it.mode == 2 && row[0].length === 23 }}
+                        {{
+                        for (var i = 0; i < 5; i ++) {
+                        }}
+                        <span onclick="ToggleColor(this)">{{=row[i]}}</span> 
+                        {{
+                        }
+                        }}
+                    {{?? it.mode == 52 && row[0].length === 7 }}
+                        {{
+                        for (var i = 0; i < 10; i ++) {
+                            var col0 = row[i][0];
+                            var col4 = row[i][4];
+
+                            var newCol0 = row[i][0]+row[i][1]+row[i][2];
+                            if(col0 == "♥" || col0 == "♦"){
+                                newCol0 = "<span style='color:red'>"+newCol0+"</span>"
+                            }
+
+                            var newCol4 = row[i][4]+row[i][5]+row[i][6];
+                            if(col4 == "♥" || col4 == "♦"){
+                                newCol4 = "<span style='color:red'>"+newCol4+"</span>"
+                            }
+
+                            var newCol = newCol0 + " " + newCol4;
+                        }}
+                        <span onclick="ToggleColor(this)" style"width:50px;display:block;">{{=newCol}}</span> 
+                        {{
+                        }
+                        }}
+                    {{?? row[0].length === 7 }}
                         {{
                         for (var i = 0; i < 10; i ++) {
                         }}
@@ -94,19 +143,25 @@
                         {{
                         }
                         }}
-                        Row {{=row[10]}}
-                    {{?? rowIdx == it.length - 1}}
+                    {{?? rowIdx == it.list.length - 1}}
                         &nbsp;
                     {{??}}
-                        <p>&nbsp;</p>    
-                        <input type="button" onclick="Restart(this)" value="重新开始训练（不清空上面的训练历史，休息后可以重新开始训练）" style="width:100%" />
-                        <p>&nbsp;</p>
+                        <p><span style="float:right">《重来》不清空上面的训练历史，休息后可以重新开始训练</span>第{{=parseInt(it.list[rowIdx-1][row.length-1])/25+1}}页</p>
+                    {{?}}
+                </td>
+                <td style="width:80px;">
+                    {{? row[0][0] != "&" }}
+                    Row {{=row[row.length-1]}}
                     {{?}}
                 </td>
                 <td style="width:100px;">
-                    {{? row[0].length === 7 }}
-                    <span style="border:1px solid gray; padding:0px 5px 1px 5px;background-color:lightgray" onclick="Finish(this, {{=row[10]}})">完成</span>
-                    <span style="border:1px solid white; padding:0px 5px 1px 5px;" id="finisherTimer{{=row[10]}}"></span>
+                    {{? rowIdx == it.list.length - 1}}
+                    &nbsp;
+                    {{?? row[0][0] != "&" }}
+                    <span style="border:1px solid gray; padding:0px 5px 1px 5px;background-color:lightgray;" onclick="Finish(this, {{=row[row.length-1]}})">完成</span>
+                    <span style="border:1px solid white; padding:0px 5px 1px 5px;" id="finisherTimer{{=row[row.length-1]}}"></span>
+                    {{??}}
+                    <p><input type="button" onclick="Restart(this)" value="重来" /></p>
                     {{?}}
                 </td>
         </tr>
@@ -169,7 +224,7 @@
                 <td>最快：{{=it.Fastest}}</td>
                 <td>最慢：{{=it.Slowest}}</td>
                 <td>平均：{{=it.Average}}</td>
-                <td>平均（除最高最低）：{{=it.Average2}}</td>
+                <td title="总行数超过10行时，除去前3名和后3名后的平均值">平均（除最高最低）：{{=it.Average2}}</td>
             </tr>
         </tfoot>
     </table>
@@ -199,7 +254,7 @@
         }
         $("#extraLeft").val(extra.join(","));
     }
-    
+
     var OctonaryRight = function () {
         $("#fromRight").val("00");
         $("#toRight").val("07");
@@ -212,26 +267,26 @@
         }
         $("#extraRight").val(extra.join(","));
     }
-    
+
     var PockerLeft = function () {
         $("#fromLeft").val("10");
         $("#toLeft").val("49");
         $("#extraLeft").val("51,52,53,54,61,62,63,64,71,72,73,74");
     }
-    
+
     var PockerRight = function () {
         $("#fromRight").val("10");
         $("#toRight").val("49");
         $("#extraRight").val("51,52,53,54,61,62,63,64,71,72,73,74");
     }
 
-    var DecimalLeft = function(){
+    var DecimalLeft = function () {
         $("#fromLeft").val("00");
         $("#toLeft").val("99");
         $("#extraLeft").val("");
     }
 
-    var DecimalRight = function(){
+    var DecimalRight = function () {
         $("#fromRight").val("00");
         $("#toRight").val("99");
         $("#extraRight").val("");
@@ -305,6 +360,115 @@
         return _.uniq(numbers);
     }
 
+    var pageSize = 10;
+    var mode = 10;
+
+    var ChangeNumberMode = function (o) {
+        mode = parseInt($(o).val());
+        switch (mode) {
+            case 2:
+            case 8:
+                pageSize = 5;
+                break;
+            case 10:
+            case 52:
+                pageSize = 10;
+                break;
+        }
+    }
+
+    var Translate = function (num) {
+        var newNum = num;
+        var n = num + "";
+        switch (mode) {
+            case 2:
+                newNum = TranslateBinary(n.substr(0, 1)) + TranslateBinary(n.substr(1, 1)) + TranslateBinary(n.substr(2, 1)) + TranslateBinary(n.substr(3, 1));
+                break;
+            case 52:
+                newNum = TranslatePocker(n.substr(0, 2)) + TranslatePocker(n.substr(2, 2));
+                break;
+        }
+        return (newNum+"").split("").join(" ");
+    }
+
+    var TranslateBinary = function (num) {
+        switch (num) {
+            case "0":
+                return "000";
+            case "1":
+                return "001";
+            case "2":
+                return "010";
+            case "3":
+                return "011";
+            case "4":
+                return "100";
+            case "5":
+                return "101";
+            case "6":
+                return "110";
+            case "7":
+                return "111";
+        }
+        return "000";
+    }
+
+    var TranslatePocker = function (num) {
+        var n = (num + "").substr(1, 1);
+        if (num >= 10 && num <= 19) {
+            return "♠" + (n == 1 ? "A" : n);
+        }
+        else if (num >= 20 && num <= 29) {
+            return "♥" + (n == 1 ? "A" : n);
+        }
+        else if (num >= 30 && num <= 39) {
+            return "♣" + (n == 1 ? "A" : n);
+        }
+        else if (num >= 40 && num <= 49) {
+            return "♦" + (n == 1 ? "A" : n);
+        }
+        else if (num >= 51 && num <= 54) {
+            var n = num % 50;
+            switch (n) {
+                case 1:
+                    return "♠J";
+                case 2:
+                    return "♥J";
+                case 3:
+                    return "♣J";
+                case 4:
+                    return "♦J";
+            }
+        }
+        else if (num >= 61 && num <= 64) {
+            var n = num % 60;
+            switch (n) {
+                case 1:
+                    return "♠Q";
+                case 2:
+                    return "♥Q";
+                case 3:
+                    return "♣Q";
+                case 4:
+                    return "♦Q";
+            }
+        }
+        else if (num >= 71 && num <= 74) {
+            var n = num % 70;
+            switch (n) {
+                case 1:
+                    return "♠K";
+                case 2:
+                    return "♥K";
+                case 3:
+                    return "♣K";
+                case 4:
+                    return "♦K";
+            }
+        }
+        return "♠A"
+    }
+
     //将所有组合随机排列
     var Randomize = function () {
         var numbers = Combination();
@@ -321,22 +485,24 @@
             numbersFinal[idx] = numbers[numbersIndices[idx]];
         }
 
-        var json = [];
-        var rowCount = Math.ceil(numbersFinal.length / 10);
+        var json = {};
+        json.mode = mode;
+        json.list = [];
+        var rowCount = Math.ceil(numbersFinal.length / pageSize);
         for (var rowIdx = 0; rowIdx < rowCount; rowIdx++) {
             var row = [];
-            for (var colIdx = 0; colIdx < 10; colIdx++) {
-                row[colIdx] = Pad(numbersFinal.pop() || "0000", true).split('').join(' ');
+            for (var colIdx = 0; colIdx < pageSize; colIdx++) {
+                row[colIdx] = Translate(Pad(numbersFinal.pop() || "0000", true));
             }
-            row[10] = rowIdx + 1;
-            json.push(row);
+            row[pageSize] = rowIdx + 1;
+            json.list.push(row);
 
             if ((rowIdx + 1) % 25 == 0) {
                 var aa = [];
-                for (var x = 0; x <= 10; x++) {
+                for (var x = 0; x <= pageSize; x++) {
                     aa.push('&nbsp;')
                 }
-                json.push(aa);
+                json.list.push(aa);
             }
         }
 
@@ -351,7 +517,7 @@
 
         //生成随机的索引
         var numbersIndices = [];
-        for (var i = 0; i < 2500; i++) {
+        for (var i = 0; i < 250*pageSize; i++) {
             numbersIndices.push(Math.floor(Math.random() * numbers.length));
         }
 
@@ -361,22 +527,24 @@
             numbersFinal.push(numbers[numbersIndices[i]]);
         }
 
-        var json = [];
-        var rowCount = Math.ceil(numbersFinal.length / 10);
+        var json = {};
+        json.mode = mode;
+        json.list = [];
+        var rowCount = Math.ceil(numbersFinal.length / pageSize);
         for (var rowIdx = 0; rowIdx < rowCount; rowIdx++) {
             var row = [];
-            for (var colIdx = 0; colIdx < 10; colIdx++) {
-                row[colIdx] = Pad(numbersFinal.pop() || "0000", true).split('').join(' ');
+            for (var colIdx = 0; colIdx < pageSize; colIdx++) {
+                row[colIdx] = Translate(Pad(numbersFinal.pop() || "0000", true));
             }
-            row[10] = rowIdx + 1;
-            json.push(row);
+            row[pageSize] = rowIdx + 1;
+            json.list.push(row);
 
             if ((rowIdx + 1) % 25 == 0) {
                 var aa = [];
-                for (var x = 0; x <= 10; x++) {
+                for (var x = 0; x <= pageSize; x++) {
                     aa.push('&nbsp;')
                 }
-                json.push(aa);
+                json.list.push(aa);
             }
         }
 
@@ -388,11 +556,17 @@
     var ToggleColor = function (o) {
         var mark = $(o).attr("MarkError");
         if (mark) {
-            $(o).css("color", "");
+            if(mode !=52){
+                $(o).css("color", "");
+            }
+            $(o).css("text-decoration", "");
             $(o).removeAttr("MarkError");
         }
         else {
-            $(o).css("color", "red");
+            if(mode !=52){
+                $(o).css("color", "red");
+            }
+            $(o).css("text-decoration", "underline");
             $(o).attr("MarkError", true);
         }
     }
@@ -468,7 +642,7 @@
         return minutes + ":" + seconds + "." + milliseconds.toFixed(0);
     }
 
-    var excludingRank = 10;//默认超过20行时，统计排除前10和后10之外的平均数
+    var excludingRank = 3;//默认超过10行时，统计排除前3和后3之外的平均数
     var DrawGraph = function () {
         var fastest = _.min(data, function (row) { return row.diffTimeMs; })
         var slowest = _.max(data, function (row) { return row.diffTimeMs; })
@@ -476,7 +650,7 @@
         var average = sum / data.length;
         var average2 = average;
 
-        if (data.length > excludingRank * 2) {
+        if (data.length > 10) {
             var sum2 = 0;
             var sortedData = _.sortBy(data, function (row) { return row.diffTimeMs; });
             for (var i = excludingRank; i < data.length - excludingRank; i++) {
