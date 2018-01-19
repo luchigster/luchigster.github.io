@@ -49,12 +49,6 @@
                 <input type="button" onclick="Randomize()" value="生成0000-9999的随机数" style="width:100%" />
             </td>
         </tr>
-        <tr>
-            <td>&nbsp;</td>
-            <td colspan="5">
-                <input type="button" onclick="Start(this)" value="开始训练" style="width:100%" />
-            </td>
-        </tr>
     </table>
 
     <!-- Table1 -->
@@ -64,6 +58,12 @@
     <div class="wrap-table">
     <table>
         <tbody>
+            <tr>
+                <td>
+                    <input type="button" onclick="Start(this)" value="开始训练" style="width:100%" />
+                </td>
+                <td></td>
+            </tr>
         <!-- Content Row -->
         {{
         for (var rowIdx = 0; rowIdx < it.length; rowIdx ++) {
@@ -80,14 +80,16 @@
                         }
                         }}
                         Row {{=row[10]}}
-                    {{??}}
+                    {{?? rowIdx == it.length - 1}}
                         &nbsp;
+                    {{??}}
+                        <input type="button" onclick="Restart(this)" value="重新计时" style="width:100%" />
                     {{?}}
                 </td>
                 <td style="width:100px;">
                     {{? row[0].length === 7 }}
                     <span style="border:1px solid gray; padding:0px 5px 1px 5px;background-color:lightgray" onclick="Finish(this, {{=row[10]}})">完成</span>
-                    <span id="finisherTimer{{=row[10]}}"></span>
+                    <span style="border:1px solid white; padding:0px 5px 1px 5px;" id="finisherTimer{{=row[10]}}"></span>
                     {{?}}
                 </td>
         </tr>
@@ -270,7 +272,6 @@
     var Start = function (o) {
         $(o).val(FormatDateTime(new Date()));
         startTimeOfLine = GetTimeStamp();
-        $(".finisher").removeAttr("disabled");
 
         data = [];
         DrawGraph();//清空表格
@@ -295,6 +296,8 @@
 
     var Finish = function (o, id) {
         var newTime = GetTimeStamp();
+        if(startTimeOfLine == 0) startTimeOfLine = newTime - 1000 * 300;//如果没有点击开始，则默认5分钟
+
         var diffTimeMs = newTime - startTimeOfLine;
         var diffTimeDisplay = GetTimeSpan(diffTimeMs);
         $("#finisherTimer" + id).html(diffTimeDisplay);
@@ -309,6 +312,11 @@
         RefreshData(axis, dat);//绘制曲线
 
         startTimeOfLine = newTime;
+    }
+
+    var Restart = function(o){
+        startTimeOfLine = GetTimeStamp();
+        $(o).val(FormatDateTime(new Date()));
     }
 
     var GetTimeStamp = function () {
