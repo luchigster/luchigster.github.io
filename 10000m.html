@@ -1,0 +1,463 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes"
+    />
+    <meta charset="utf-8" />
+    <title>10000数字</title>
+    <script src="https://cdn.bootcss.com/dot/1.1.2/doT.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/underscore.js/1.8.3/underscore.js"></script>
+    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+</head>
+
+<body style="background-color:white;">
+    <h4>数字训练</h4>
+    <table>
+        <tr>
+            <td>
+                <input type="button" onclick="LoadJson()" value="加载全部数据" title="加载全部数据" />&nbsp;
+                <input type="button" onclick="LoadJson2()" value="加载我的数据" title="加载我的数据" />&nbsp;
+                <input id="btnRandomize" type="button" onclick="Randomize()" value="排列组合" title="排列组合" disabled="disabled" />&nbsp;
+            </td>
+        </tr>
+    </table>
+
+    <!-- Table1 -->
+    <div id="container"></div>
+    <textarea id="tpl" style="display:none">
+     
+    <div class="wrap-table">
+    <table style="width:780px;">
+        <tbody>
+            <tr>
+                <td><p>第1页</p></td>
+                <td></td>
+                <td>
+                    <p><input type="button" onclick="Start(this)" value="开始" /></p>
+                </td>
+            </tr>
+        <!-- Content Row -->
+        {{
+        for (var rowIdx = 0; rowIdx < it.list.length; rowIdx ++) {
+            var row = it.list[rowIdx];
+        }}
+        <tr id="row{{=row[row.length-1]}}">
+                <td>
+                    {{? row[0].length === 7 }}
+                        {{
+                        for (var i = 0; i < 10; i ++) {
+                        }}
+                        <span onclick="ToggleColor(this)">{{=row[i]}}</span> 
+                        {{
+                        }
+                        }}
+                    {{?? rowIdx == it.list.length - 1}}
+                        &nbsp;
+                    {{??}}
+                        <p><span style="float:right">《重来》不清空上面的训练历史，休息后可以重新开始训练</span>第{{=parseInt(it.list[rowIdx-1][row.length-1])/25+1}}页</p>
+                    {{?}}
+                </td>
+                <td style="width:80px;">
+                    {{? row[0][0] != "&" }}
+                    Row {{=row[row.length-1]}}
+                    {{?}}
+                </td>
+                <td style="width:100px;">
+                    {{? rowIdx == it.list.length - 1}}
+                    &nbsp;
+                    {{?? row[0][0] != "&" }}
+                    <span style="border:1px solid gray; padding:0px 5px 1px 5px;background-color:lightgray;" onclick="Finish(this, {{=row[row.length-1]}})">完成</span>
+                    <span style="border:1px solid white; padding:0px 5px 1px 5px;" id="finisherTimer{{=row[row.length-1]}}"></span>
+                    {{??}}
+                    <p><input type="button" onclick="Restart(this)" value="重来" /></p>
+                    {{?}}
+                </td>
+        </tr>
+        {{
+        }
+        }}               
+        <!-- End of Content Rows -->
+        </tbody>
+    </table>
+    </div>
+            
+    </textarea>
+    <p>&nbsp;</p>
+
+    <!-- Table2 -->
+    <div id="container2"></div>
+    <textarea id="tpl2" style="display:none">
+     
+    <div class="wrap-table">
+    <table border="1" cellspacing="0" cellpadding="5" style="border-color:azure">
+        <thead>
+            <td>行号</td>
+            <td>耗时（毫秒）</td>
+            <td>耗时</td>
+            <td>完成时间</td>
+        </thead>
+        <tbody>
+        <!-- Content Row -->
+        {{
+        for (var rowIdx = 0; rowIdx < it.List.length; rowIdx ++) {
+            var row = it.List[rowIdx];
+        }}
+        <tr id="row{{=row.id}}">
+                <td>
+                    {{=row.id}}
+                </td>    
+                <td>
+                    {{=row.diffTimeMs}}
+                </td>
+                <td>
+                    {{? row.diffTimeDisplay == it.Fastest }}
+                    <span style="background-color:green;color:white">{{=row.diffTimeDisplay}}</span>
+                    {{?? row.diffTimeDisplay == it.Slowest }}
+                    <span style="color:red">{{=row.diffTimeDisplay}}</span>
+                    {{??}}
+                    {{=row.diffTimeDisplay}}
+                    {{?}}
+                </td>
+                <td>
+                    {{=row.currentTime}}
+                </td>
+        </tr>
+        {{
+        }
+        }}               
+        <!-- End of Content Rows -->
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>最快：{{=it.Fastest}}</td>
+                <td>最慢：{{=it.Slowest}}</td>
+                <td>平均：{{=it.Average}}</td>
+                <td title="总行数超过10行时，除去前3名和后3名后的平均值">平均（除最高最低）：{{=it.Average2}}</td>
+            </tr>
+        </tfoot>
+    </table>
+    </div>
+            
+    </textarea>
+
+    <p>&nbsp;</p>
+    <div id="main" style="height:400px;"></div>
+
+    <div>
+        <button onclick="ExportRawData()">导出原始数据</button>
+    </div>
+    <textarea id="rawData" style="width:100%" rows="10"></textarea>
+</body>
+<script>
+
+    var Pad = function (num, full) {
+        num = parseInt(num);
+        if (full) {
+            if (num < 10) {
+                return "000" + num;
+            }
+            else if (num < 100) {
+                return "00" + num;
+            }
+            else if (num < 1000) {
+                return "0" + num;
+            }
+            return num + "";
+        }
+        else {
+            return num < 10 ? '0' + num : num + "";
+        }
+    }
+
+    var Translate = function (num) {
+        return (num+"").split("").join(" ");
+    }
+
+    var Shuffle = function (input) {
+        for (var i = input.length - 1; i >= 0; i--) {
+            var randomIndex = Math.floor(Math.random() * (i + 1));
+            var itemAtIndex = input[randomIndex];
+            input[randomIndex] = input[i];
+            input[i] = itemAtIndex;
+        }
+    }
+
+    var LoadJson = function(){
+        $.getJSON("http://luchigster.github.io/10000m.json", function(data){
+            numbers = data.Numbers;
+            $("#btnRandomize").removeAttr("disabled");
+        })
+    }
+    
+    var LoadJson2 = function(){
+        $.getJSON("http://luchigster.github.io/10000m2.json", function(data){
+            numbers = data.Numbers;
+            $("#btnRandomize").removeAttr("disabled");
+        })
+    }
+
+    var numbers = [];
+    //所有有效的数字
+    var Combination = function () {
+    
+        // var numbers = ["1122","2123"];
+
+        return _.uniq(numbers);
+    }
+
+    var pageSize = 10;
+    var mode = 10;
+
+    //将所有组合随机排列
+    var Randomize = function () {
+        var numbers = Combination();
+
+        //随机排序
+        var numbersIndices = [];
+        for (var idx = 0; idx < numbers.length; idx++) {
+            numbersIndices[idx] = idx;
+        }
+        Shuffle(numbersIndices);//索引随机排序
+
+        var numbersFinal = [];
+        for (var idx = 0; idx < numbers.length; idx++) {
+            numbersFinal[idx] = numbers[numbersIndices[idx]];
+        }
+
+        var json = {};
+        json.mode = mode;
+        json.list = [];
+        var rowCount = Math.ceil(numbersFinal.length / pageSize);
+        for (var rowIdx = 0; rowIdx < rowCount; rowIdx++) {
+            var row = [];
+            for (var colIdx = 0; colIdx < pageSize; colIdx++) {
+                row[colIdx] = Translate(Pad(numbersFinal.pop() || "0000", true));
+            }
+            row[pageSize] = rowIdx + 1;
+            json.list.push(row);
+
+            if ((rowIdx + 1) % 25 == 0) {
+                var aa = [];
+                for (var x = 0; x <= pageSize; x++) {
+                    aa.push('&nbsp;')
+                }
+                json.list.push(aa);
+            }
+        }
+
+        var tmpText = doT.template(document.getElementById("tpl").innerText);
+        var result = tmpText(json);
+        document.getElementById("container").innerHTML = result;
+    }
+
+    var ToggleColor = function (o) {
+        var mark = $(o).attr("MarkError");
+        if (mark) {
+            $(o).css("color", "");
+            $(o).css("text-decoration", "");
+            $(o).removeAttr("MarkError");
+        }
+        else {
+            $(o).css("color", "red");
+            $(o).css("text-decoration", "underline");
+            $(o).attr("MarkError", true);
+        }
+    }
+
+    var startTimeOfLine = 0;
+    var data = [];
+
+    var Start = function (o) {
+        $(o).val("已开始");
+        startTimeOfLine = GetTimeStamp();
+
+        data = [];
+        DrawGraph();//清空表格
+        RefreshData([], []);//重绘曲线
+    }
+
+    var FormatDateTime = function (date) {
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        minute = minute < 10 ? ('0' + minute) : minute;
+        var second = date.getSeconds();
+        second = second < 10 ? ('0' + second) : second;
+        var millisecond = date.getMilliseconds();
+        millisecond = millisecond < 10 ? ('0' + millisecond) : millisecond < 100 ? ('00' + millisecond) : millisecond;
+        return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ":" + second + "." + millisecond;
+    };
+
+    var Finish = function (o, id) {
+        var newTime = GetTimeStamp();
+        if (startTimeOfLine == 0) startTimeOfLine = newTime - 1000 * 300;//如果没有点击开始，则默认5分钟
+
+        var diffTimeMs = newTime - startTimeOfLine;
+        var diffTimeDisplay = GetTimeSpan(diffTimeMs);
+        $("#finisherTimer" + id).html(diffTimeDisplay);
+        $("#finisherTimer" + id).show();
+        $(o).hide();
+
+        data.push({ id: id, diffTimeMs: diffTimeMs, diffTimeDisplay: diffTimeDisplay, currentTime: FormatDateTime(new Date(newTime)) });
+        DrawGraph();//绘制表格
+
+        var axis = _.map(data, function (value) { return value["id"]; });
+        var dat = _.map(data, function (value) { return value["diffTimeMs"] / 1000; });
+        RefreshData(axis, dat);//绘制曲线
+
+        startTimeOfLine = newTime;
+    }
+
+    var Restart = function (o) {
+        startTimeOfLine = GetTimeStamp();
+        $(o).val("已重启");
+    }
+
+    var GetTimeStamp = function () {
+        return new Date().getTime();
+    }
+
+    //返回 分:秒.毫秒
+    var GetTimeSpan = function (timespanMs) {
+        var milliseconds = timespanMs % 1000;
+        var seconds = Math.floor(timespanMs / 1000);
+        var minutes = 0;
+        if (seconds >= 60) {
+            minutes = Math.floor(seconds / 60);
+            seconds = seconds % 60;
+        }
+        minutes = minutes < 10 ? ('0' + minutes) : minutes;
+        seconds = seconds < 10 ? ('0' + seconds) : seconds;
+        return minutes + ":" + seconds + "." + milliseconds.toFixed(0);
+    }
+
+    var excludingRank = 3;//默认超过10行时，统计排除前3和后3之外的平均数
+    var DrawGraph = function () {
+        var fastest = _.min(data, function (row) { return row.diffTimeMs; })
+        var slowest = _.max(data, function (row) { return row.diffTimeMs; })
+        var sum = _.reduce(data, function (num, row) { return row.diffTimeMs + num; }, 0)
+        var average = sum / data.length;
+        var average2 = average;
+
+        if (data.length > 10) {
+            var sum2 = 0;
+            var sortedData = _.sortBy(data, function (row) { return row.diffTimeMs; });
+            for (var i = excludingRank; i < data.length - excludingRank; i++) {
+                sum2 += sortedData[i].diffTimeMs;
+            }
+            average2 = sum2 / (data.length - excludingRank - excludingRank);
+        }
+        var source = {
+            Fastest: GetTimeSpan(fastest.diffTimeMs),
+            Slowest: GetTimeSpan(slowest.diffTimeMs),
+            Average: GetTimeSpan(average),
+            Average2: GetTimeSpan(average2),
+            List: data
+        };
+
+        var tmpText = doT.template(document.getElementById("tpl2").innerText);
+        var result = tmpText(source);
+
+        document.getElementById("container2").innerHTML = result;
+    }
+
+    // 路径配置
+    require.config({
+        paths: {
+            echarts: 'http://echarts.baidu.com/build/dist'
+        }
+    });
+
+    // 使用
+    require(
+        [
+            'echarts',
+            'echarts/chart/line'
+        ],
+        function (ec) {
+            // 基于准备好的dom，初始化echarts图表
+            myChart = ec.init(document.getElementById('main'));
+
+            var option = {
+                title: {
+                    text: '训练耗时变化曲线',
+                    subtext: '变化趋势'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['耗时']
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        saveAsImage: { show: true }
+                    }
+                },
+                calculable: true,
+                xAxis: [
+                    {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: [1]
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        axisLabel: {
+                            formatter: '{value} 秒'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '每行耗时',
+                        type: 'line',
+                        data: [1],
+                        markPoint: {
+                            data: [
+                                { type: 'max', name: '最大值' },
+                                { type: 'min', name: '最小值' }
+                            ]
+                        },
+                        markLine: {
+                            data: [
+                                { type: 'average', name: '平均值' }
+                            ]
+                        }
+                    }
+                ]
+            };
+
+            // 为echarts对象加载数据 
+            myChart.setOption(option);
+        }
+    );
+
+    var RefreshData = function (axis, data) {
+        if (!myChart) {
+            return;
+        }
+
+        //更新数据
+        var option = myChart.getOption();
+        option.xAxis[0].data = axis;
+        option.series[0].data = data;
+        myChart.setOption(option);
+    }
+
+    var ExportRawData = function (fileName) {
+        var content = JSON.stringify(data, null, 2);
+        $("#rawData").html(content);
+    }
+</script>
+
+</html>
