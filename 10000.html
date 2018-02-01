@@ -18,7 +18,7 @@
         <br> 由于赛制、编码数量等都不相同无法作为真实训练材料，熟悉编码连接后务必使用真实的二进制、扑克牌进行直映训练。
         <br> 二进制、扑克牌所用到的连接共有5041个，在10000连中地位比较重要些，而扑克牌的2704更重要，需要特别优化。
     </p>
-    <table>
+    <table style="width:100%;">
         <tr>
             <td style="width:100px">左侧编码从：</td>
             <td style="width:20px">
@@ -81,7 +81,7 @@
     <textarea id="tpl" style="display:none">
      
     <div class="wrap-table">
-    <table>
+    <table style="width:780px;">
         <tbody>
             <tr>
                 <td><p>第1页</p></td>
@@ -155,9 +155,7 @@
                     {{?}}
                 </td>
                 <td style="width:100px;">
-                    {{? rowIdx == it.list.length - 1}}
-                    &nbsp;
-                    {{?? row[0][0] != "&" }}
+                    {{? row[0][0] != "&" }}
                     <span style="border:1px solid gray; padding:0px 5px 1px 5px;background-color:lightgray;" onclick="Finish(this, {{=row[row.length-1]}})">完成</span>
                     <span style="border:1px solid white; padding:0px 5px 1px 5px;" id="finisherTimer{{=row[row.length-1]}}"></span>
                     {{??}}

@@ -65,9 +65,7 @@
                     {{?}}
                 </td>
                 <td style="width:100px;">
-                    {{? rowIdx == it.list.length - 1}}
-                    &nbsp;
-                    {{?? row[0][0] != "&" }}
+                    {{? row[0][0] != "&" }}
                     <span style="border:1px solid gray; padding:0px 5px 1px 5px;background-color:lightgray;" onclick="Finish(this, {{=row[row.length-1]}})">完成</span>
                     <span style="border:1px solid white; padding:0px 5px 1px 5px;" id="finisherTimer{{=row[row.length-1]}}"></span>
                     {{??}}
