@@ -615,9 +615,13 @@
     };
 
     var Finish1 = function (o, id) {
-        var o2 = $("#finisherTimerBtn" + id);
-        Finish(o2, id);
-        $(o).css("background-color","white");
+        if($(o).attr("disabled") != "disabled")
+        {
+            var o2 = $("#finisherTimerBtn" + id);
+            Finish(o2, id);
+            $(o).css("background-color","white");
+            $(o).attr("disabled","disabled");
+        }
     }
 
     var Finish = function (o, id) {
