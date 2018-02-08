@@ -84,7 +84,8 @@
     <table style="width:100%;">
         <tbody>
             <tr>
-                <td><p>第1页</p></td>
+                <td></td>
+                <td><p>第1页<span id="pTitle1"></span></p></td>
                 <td></td>
                 <td>
                     <p><input type="button" onclick="Start(this)" value="开始" /></p>
@@ -94,8 +95,18 @@
         {{
         for (var rowIdx = 0; rowIdx < it.list.length; rowIdx ++) {
             var row = it.list[rowIdx];
+            var page = 0;
+            if (row[0][0] == "&")
+                page = parseInt(it.list[rowIdx-1][row.length-1])/25+1;
         }}
         <tr id="row{{=row[row.length-1]}}">
+                <td>
+                    {{? row[0][0] != "&" }}
+                    <span style="border:1px solid gray; padding:0px 5px 1px 5px;background-color:lightgray;" onclick="Finish1(this, {{=row[row.length-1]}})">完成</span>
+                    {{??}}
+                    <p><input type="button" onclick="Restart(this,{{=page}})" value="重来" /></p>
+                    {{?}}
+                </td>
                 <td>
                     {{? it.mode == 8 && row[0].length === 7 }}
                         {{
@@ -146,7 +157,7 @@
                     {{?? rowIdx == it.list.length - 1}}
                         &nbsp;
                     {{??}}
-                        <p><span style="float:right">《重来》不清空上面的训练历史，休息后可以重新开始训练</span>第{{=parseInt(it.list[rowIdx-1][row.length-1])/25+1}}页</p>
+                        <p><span style="float:right">《重来》不清空上面的训练历史，休息后可以重新开始训练</span>第{{=page}}页<span id="pTitle{{=page}}"></span></p>
                     {{?}}
                 </td>
                 <td style="width:80px;">
@@ -156,10 +167,10 @@
                 </td>
                 <td style="width:100px;">
                     {{? row[0][0] != "&" }}
-                    <span style="border:1px solid gray; padding:0px 5px 1px 5px;background-color:lightgray;" onclick="Finish(this, {{=row[row.length-1]}})">完成</span>
+                    <span style="border:1px solid gray; padding:0px 5px 1px 5px;background-color:lightgray;" id="finisherTimerBtn{{=row[row.length-1]}}" onclick="Finish(this, {{=row[row.length-1]}})">完成</span>
                     <span style="border:1px solid white; padding:0px 5px 1px 5px;" id="finisherTimer{{=row[row.length-1]}}"></span>
                     {{??}}
-                    <p><input type="button" onclick="Restart(this)" value="重来" /></p>
+                    <p><input type="button" onclick="Restart(this,{{=page}})" value="重来" /></p>
                     {{?}}
                 </td>
         </tr>
@@ -386,7 +397,7 @@
                 newNum = TranslatePocker(n.substr(0, 2)) + TranslatePocker(n.substr(2, 2));
                 break;
         }
-        return (newNum+"").split("").join(" ");
+        return (newNum + "").split("").join(" ");
     }
 
     var TranslateBinary = function (num) {
@@ -515,7 +526,7 @@
 
         //生成随机的索引
         var numbersIndices = [];
-        for (var i = 0; i < 250*pageSize; i++) {
+        for (var i = 0; i < 250 * pageSize; i++) {
             numbersIndices.push(Math.floor(Math.random() * numbers.length));
         }
 
@@ -554,14 +565,14 @@
     var ToggleColor = function (o) {
         var mark = $(o).attr("MarkError");
         if (mark) {
-            if(mode !=52){
+            if (mode != 52) {
                 $(o).css("color", "");
             }
             $(o).css("text-decoration", "");
             $(o).removeAttr("MarkError");
         }
         else {
-            if(mode !=52){
+            if (mode != 52) {
                 $(o).css("color", "red");
             }
             $(o).css("text-decoration", "underline");
@@ -573,7 +584,7 @@
     var data = [];
 
     var Start = function (o) {
-        $(o).val(FormatDateTime(new Date()));
+        $("#pTitle1").html(FormatDateTime(new Date()));
         startTimeOfLine = GetTimeStamp();
 
         data = [];
@@ -597,6 +608,12 @@
         return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ":" + second + "." + millisecond;
     };
 
+    var Finish1 = function (o, id) {
+        var o2 = $("#finisherTimerBtn" + id);
+        Finish(o2, id);
+        $(o).hide();
+    }
+
     var Finish = function (o, id) {
         var newTime = GetTimeStamp();
         if (startTimeOfLine == 0) startTimeOfLine = newTime - 1000 * 300;//如果没有点击开始，则默认5分钟
@@ -617,9 +634,9 @@
         startTimeOfLine = newTime;
     }
 
-    var Restart = function (o) {
+    var Restart = function (o, page) {
         startTimeOfLine = GetTimeStamp();
-        $(o).val(FormatDateTime(new Date()));
+        $("#pTitle"+page).html(FormatDateTime(new Date()));
     }
 
     var GetTimeStamp = function () {
