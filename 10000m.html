@@ -10,6 +10,11 @@
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/underscore.js/1.8.3/underscore.js"></script>
     <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+    <style type="text/css">
+    body{
+        font-size: 14px;
+    }
+    </style>    
 </head>
 
 <body style="background-color:white;">
@@ -66,7 +71,7 @@
                 </td>
                 <td style="width:100px;">
                     {{? row[0][0] != "&" }}
-                    <span style="border:1px solid gray; padding:0px 5px 1px 5px;background-color:lightgray;" onclick="Finish(this, {{=row[row.length-1]}})">完成</span>
+                    <span style="border:1px solid gray; padding:0px 5px 1px 5px;background-color:lightgray;" onclick="Finish(this, {{=row[row.length-1]}})">FINISH</span>
                     <span style="border:1px solid white; padding:0px 5px 1px 5px;" id="finisherTimer{{=row[row.length-1]}}"></span>
                     {{??}}
                     <p><input type="button" onclick="Restart(this)" value="重来" /></p>
