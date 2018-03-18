@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes"
+    />
+    <meta charset="utf-8" />
+    <title>10000数字</title>
+    <script src="https://cdn.bootcss.com/dot/1.1.2/doT.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/underscore.js/1.8.3/underscore.js"></script>
+    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+    <style type="text/css">
+    body{
+        font-size: 14px;
+    }
+    </style>    
+</head>
+
+<body style="background-color:white;">
+    <h4>数字训练</h4>
+    <table>
+        <tr>
+            <td>
+                <input type="button" onclick="LoadJson(1)" value="加载全部数据" title="加载全部数据" />&nbsp;
+                <input type="button" onclick="LoadJson(2)" value="加载扑克牌" title="加载扑克牌数据" />&nbsp;
+                <input type="button" onclick="LoadJson(3)" value="加载二进制" title="加载二进制数据" />&nbsp;
+                <input type="button" onclick="LoadJson(4)" value="加载其他" title="加载其他数据" />&nbsp;
+                <input id="btnRandomize" type="button" onclick="Randomize()" value="排列组合" title="排列组合" disabled="disabled" />&nbsp;
+            </td>
+        </tr>
+    </table>
+
+    <!-- Table1 -->
+    <div id="container"></div>
+    <textarea id="tpl" style="display:none">
+     
+    <div class="wrap-table">
+    <table style="width:780px;">
+        <tbody>
+            <tr>
+                <td><p>第1页</p></td>
+                <td></td>
+                <td>
+                    <p><input type="button" onclick="Start(this)" value="开始" /></p>
+                </td>
+            </tr>
+        <!-- Content Row -->
+        {{
+        for (var rowIdx = 0; rowIdx < it.list.length; rowIdx ++) {
+            var row = it.list[rowIdx];
+        }}
+        <tr id="row{{=row[row.length-1]}}">
+                <td>
+                    {{? row[0].length === 7 }}
+                        {{
+                        for (var i = 0; i < 10; i ++) {
+                        }}
+                        <span onclick="ToggleColor(this)">{{=row[i]}}</span> 
+                        {{
+                        }
+                        }}
+                    {{?? rowIdx == it.list.length - 1}}
+                        &nbsp;
+                    {{??}}
+                        <p><span style="float:right">《重来》不清空上面的训练历史，休息后可以重新开始训练</span>第{{=parseInt(it.list[rowIdx-1][row.length-1])/25+1}}页</p>
+                    {{?}}
+                </td>
+                <td style="width:80px;">
+                    {{? row[0][0] != "&" }}
+                    Row {{=row[row.length-1]}}
+                    {{?}}
+                </td>
+        </tr>
+        {{
+        }
+        }}               
+        <!-- End of Content Rows -->
+        </tbody>
+    </table>
+    </div>
+            
+    </textarea>
+</body>
+<script>
+
+    var Pad = function (num, full) {
+        num = parseInt(num);
+        if (full) {
+            if (num < 10) {
+                return "000" + num;
+            }
+            else if (num < 100) {
+                return "00" + num;
+            }
+            else if (num < 1000) {
+                return "0" + num;
+            }
+            return num + "";
+        }
+        else {
+            return num < 10 ? '0' + num : num + "";
+        }
+    }
+
+    var Translate = function (num) {
+        return (num+"").split("").join(" ");
+    }
+
+    var Shuffle = function (input) {
+        for (var i = input.length - 1; i >= 0; i--) {
+            var randomIndex = Math.floor(Math.random() * (i + 1));
+            var itemAtIndex = input[randomIndex];
+            input[randomIndex] = input[i];
+            input[i] = itemAtIndex;
+        }
+    }
+
+    var LoadJson = function(num){
+        $.getJSON("http://luchigster.github.io/10000s"+num+".json", function(data){
+            numbers = data.Numbers;
+            $("#btnRandomize").removeAttr("disabled");
+        })
+    }
+
+    var numbers = [];
+    //所有有效的数字
+    var Combination = function () {
+    
+        // var numbers = ["1122","2123"];
+
+        return _.uniq(numbers);
+    }
+
+    var pageSize = 10;
+    var mode = 10;
+
+    //将所有组合随机排列
+    var Randomize = function () {
+        var numbers = Combination();
+
+        //随机排序
+        var numbersIndices = [];
+        for (var idx = 0; idx < numbers.length; idx++) {
+            numbersIndices[idx] = idx;
+        }
+        Shuffle(numbersIndices);//索引随机排序
+
+        var numbersFinal = [];
+        for (var idx = 0; idx < numbers.length; idx++) {
+            numbersFinal[idx] = numbers[numbersIndices[idx]];
+        }
+
+        var json = {};
+        json.mode = mode;
+        json.list = [];
+        var rowCount = Math.ceil(numbersFinal.length / pageSize);
+        for (var rowIdx = 0; rowIdx < rowCount; rowIdx++) {
+            var row = [];
+            for (var colIdx = 0; colIdx < pageSize; colIdx++) {
+                row[colIdx] = Translate(Pad(numbersFinal.pop() || "0000", true));
+            }
+            row[pageSize] = rowIdx + 1;
+            json.list.push(row);
+
+            if ((rowIdx + 1) % 25 == 0) {
+                var aa = [];
+                for (var x = 0; x <= pageSize; x++) {
+                    aa.push('&nbsp;')
+                }
+                json.list.push(aa);
+            }
+        }
+
+        var tmpText = doT.template(document.getElementById("tpl").innerText);
+        var result = tmpText(json);
+        document.getElementById("container").innerHTML = result;
+    }
+
+    var ToggleColor = function (o) {
+        var mark = $(o).attr("MarkError");
+        if (mark) {
+            $(o).css("color", "");
+            $(o).css("text-decoration", "");
+            $(o).removeAttr("MarkError");
+        }
+        else {
+            $(o).css("color", "red");
+            $(o).css("text-decoration", "underline");
+            $(o).attr("MarkError", true);
+        }
+    }
+</script>
+
+</html>

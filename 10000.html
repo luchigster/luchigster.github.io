@@ -370,6 +370,11 @@
         var numbers = [];
         for (var leftIdx = 0; leftIdx < numbersLeft.length; leftIdx++) {
             for (var rightIdx = 0; rightIdx < numbersRight.length; rightIdx++) {
+                if(mode == 52 && numbersLeft[leftIdx] == numbersRight[rightIdx])//扑克牌排除重复的
+                {
+                    continue;
+                }
+                
                 numbers.push(Pad(numbersLeft[leftIdx]) + Pad(numbersRight[rightIdx]));
             }
         }
