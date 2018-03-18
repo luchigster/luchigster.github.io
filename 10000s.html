@@ -41,9 +41,6 @@
             <tr>
                 <td><p>第1页</p></td>
                 <td></td>
-                <td>
-                    <p><input type="button" onclick="Start(this)" value="开始" /></p>
-                </td>
             </tr>
         <!-- Content Row -->
         {{
@@ -60,15 +57,13 @@
                         {{
                         }
                         }}
+                        {{? row[0][0] != "&" }}
+                        <span style="margin-left:20px;">Row {{=row[row.length-1]}}</span>
+                        {{?}}
                     {{?? rowIdx == it.list.length - 1}}
                         &nbsp;
                     {{??}}
-                        <p><span style="float:right">《重来》不清空上面的训练历史，休息后可以重新开始训练</span>第{{=parseInt(it.list[rowIdx-1][row.length-1])/25+1}}页</p>
-                    {{?}}
-                </td>
-                <td style="width:80px;">
-                    {{? row[0][0] != "&" }}
-                    Row {{=row[row.length-1]}}
+                        <p>第{{=parseInt(it.list[rowIdx-1][row.length-1])/25+1}}页</p>
                     {{?}}
                 </td>
         </tr>
