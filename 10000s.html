@@ -18,14 +18,14 @@
 </head>
 
 <body style="background-color:white;">
-    <h4>数字训练</h4>
+    <h4>数字训练 <span id="ti"></span></h4>
     <table>
         <tr>
             <td>
                 <input type="button" onclick="LoadJson(1)" value="加载全部数据" title="加载全部数据" />&nbsp;
                 <input type="button" onclick="LoadJson(2)" value="加载扑克牌" title="加载扑克牌数据" />&nbsp;
                 <input type="button" onclick="LoadJson(3)" value="加载二进制" title="加载二进制数据" />&nbsp;
-                <input type="button" onclick="LoadJson(4)" value="加载其他" title="加载其他数据" />&nbsp;
+                <input type="button" onclick="LoadJson(4)" value="加载其他" title="加载其他数据" />&nbsp;&nbsp;|&nbsp;
                 <input id="btnRandomize" type="button" onclick="Randomize()" value="排列组合" title="排列组合" disabled="disabled" />&nbsp;
             </td>
         </tr>
@@ -112,6 +112,24 @@
     }
 
     var LoadJson = function(num){
+        var title = "";
+        switch(num){
+            case 1:
+            title = "全部数据共10000连接";
+            break;
+            case 2:
+            title = "扑克牌共2652连接";
+            break;
+            case 3:
+            title = "二进制共4096连接";
+            break;
+            case 4:
+            title = "其他数据共5144连接";
+            break;
+            default:
+            break;
+        }
+        $("#ti").html("["+title+"]");
         $.getJSON("http://luchigster.github.io/10000s"+num+".json", function(data){
             numbers = data.Numbers;
             $("#btnRandomize").removeAttr("disabled");
